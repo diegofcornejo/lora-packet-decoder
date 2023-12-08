@@ -81,15 +81,13 @@ export default function Home() {
 					<br />
 					<span className='text-sm'>
 						created by{' '} <a href="https://github.com/diegofcornejo" target="_blank" className="text-blue-500 hover:text-blue-700">Diego Cornejo</a> from {' '} <a href="https://gridia.io" target="_blank" className="text-blue-500 hover:text-blue-700">Gridia.io</a>
-
-						<br />
-						powered by{' '} <a href="https://github.com/anthonykirby" target="_blank" className="text-blue-500 hover:text-blue-700">Anthony Kirby</a>
+						{' '} powered by{' '} <a href="https://github.com/anthonykirby" target="_blank" className="text-blue-500 hover:text-blue-700">Anthony Kirby</a>
 					</span>
 				</p>
 			</div>
 			<div className="flex flex-col items-center justify-center w-full space-y-4">
 				<div
-					className="flex flex-col items-center justify-center w-full p-12 space-y-4 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:shadow-xl"
+					className="flex flex-col items-center justify-center w-full p-6 space-y-4 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:shadow-xl"
 				>
 					<div className="flex flex-col items-center justify-center w-full space-y-4">
 						<div className="flex flex-col items-center justify-center w-full space-y-4">
@@ -97,7 +95,7 @@ export default function Home() {
 								className="text-sm font-bold text-gray-700 dark:text-gray-300"
 								htmlFor="lora-packet"
 							>
-								Lora Packet
+								Lora Packet (hex-encoded or Base64)
 							</label>
 							<div className="flex items-center mb-4">
 								<input id="default-checkbox" type="checkbox" checked={isBase64} onChange={() => setIsBase64(!isBase64)} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
@@ -114,55 +112,57 @@ export default function Home() {
 								onChange={handlePacketChange}
 							></textarea>
 						</div>
-						<div className="flex flex-col items-center justify-center w-full space-y-4">
-							<label
-								className="text-sm font-bold text-gray-700 dark:text-gray-300"
-								htmlFor="app-key"
-							>
-								App Key
-							</label>
-							<input
-								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
-								type="text"
-								name="app-key"
-								id="app-key"
-								placeholder="Paste your App Key here"
-								value={appKey}
-								onChange={handleAppKeyChange}
-							/>
-						</div>
-						<div className="flex flex-col items-center justify-center w-full space-y-4">
-							<label
-								className="text-sm font-bold text-gray-700 dark:text-gray-300"
-								htmlFor="nwk-key"
-							>
-								Nwk Key
-							</label>
-							<input
-								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
-								type="text"
-								name="nwk-key"
-								id="nwk-key"
-								placeholder="Paste your Nwk Key here"
-								value={nwkKey}
-								onChange={handleNwkKeyChange}
-							/>
+						<div className="flex flex-row items-center justify-center w-full gap-4 pt-6">
+							<div className="flex flex-col items-center justify-center w-full space-y-4">
+								<label
+									className="text-sm font-bold text-gray-700 dark:text-gray-300"
+									htmlFor="app-key"
+								>
+									AppSKey (hex-encoded; optional)
+								</label>
+								<input
+									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+									type="text"
+									name="app-key"
+									id="app-key"
+									placeholder="Paste your App Key here"
+									value={appKey}
+									onChange={handleAppKeyChange}
+								/>
+							</div>
+							<div className="flex flex-col items-center justify-center w-full space-y-4">
+								<label
+									className="text-sm font-bold text-gray-700 dark:text-gray-300"
+									htmlFor="nwk-key"
+								>
+									NwkSKey (hex-encoded; optional)
+								</label>
+								<input
+									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+									type="text"
+									name="nwk-key"
+									id="nwk-key"
+									placeholder="Paste your Nwk Key here"
+									value={nwkKey}
+									onChange={handleNwkKeyChange}
+								/>
+							</div>
 						</div>
 					</div>
 					<div className="flex items-center justify-center w-full space-x-4">
 						<button onClick={handleDecode}
-							className="px-4 py-2 text-sm font-bold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+							className="w-20 px-4 py-2 text-sm font-bold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
 						>
 							Decode
 						</button>
 						<button onClick={handleClear}
-							className="px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
+							className="w-20 px-4 py-2 text-sm font-bold text-white bg-red-500 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
 						>
 							Clear
 						</button>
 					</div>
 				</div>
-				<div className="flex flex-col items-center justify-center w-full p-12 space-y-4 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:shadow-xl">
+				<div className="flex flex-col items-center justify-center w-full p-6 space-y-4 bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:shadow-xl">
 					<div className="flex flex-col items-center justify-center w-full space-y-4">
 						<label
 							className="text-sm font-bold text-gray-700 dark:text-gray-300"
