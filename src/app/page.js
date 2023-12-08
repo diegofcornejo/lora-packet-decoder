@@ -110,7 +110,7 @@ export default function Home() {
 								cols="30"
 								rows="1"
 								placeholder="Paste your LoraWAN packet here"
-								defaultValue={packet}
+								value={packet}
 								onChange={handlePacketChange}
 							></textarea>
 						</div>
@@ -127,7 +127,7 @@ export default function Home() {
 								name="app-key"
 								id="app-key"
 								placeholder="Paste your App Key here"
-								defaultValue={appKey}
+								value={appKey}
 								onChange={handleAppKeyChange}
 							/>
 						</div>
@@ -144,7 +144,7 @@ export default function Home() {
 								name="nwk-key"
 								id="nwk-key"
 								placeholder="Paste your Nwk Key here"
-								defaultValue={nwkKey}
+								value={nwkKey}
 								onChange={handleNwkKeyChange}
 							/>
 						</div>
@@ -177,7 +177,7 @@ export default function Home() {
 							cols="30"
 							rows="30"
 							placeholder="Decoded packet will appear here"
-							defaultValue={decoded}
+							value={decoded}
 						></textarea>
 					</div>
 				</div>
