@@ -81,7 +81,7 @@ export default function Home() {
 					<br />
 					<span className='text-sm'>
 						created by{' '} <a href="https://github.com/diegofcornejo" target="_blank" className="text-blue-500 hover:text-blue-700">Diego Cornejo</a> from {' '} <a href="https://gridia.io" target="_blank" className="text-blue-500 hover:text-blue-700">Gridia.io</a>
-						{' '} powered by{' '} <a href="https://github.com/anthonykirby" target="_blank" className="text-blue-500 hover:text-blue-700">Anthony Kirby</a>
+						{' '} powered by{' '} <a href="https://github.com/anthonykirby/lora-packet" target="_blank" className="text-blue-500 hover:text-blue-700">Anthony Kirby's lora-packet</a>
 					</span>
 				</p>
 			</div>
