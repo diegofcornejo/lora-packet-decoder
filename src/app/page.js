@@ -1,7 +1,7 @@
 "use client"
 
 import Image from 'next/image';
-import * as lora_packet from 'lora-packet';
+import * as lorapacket from 'lora-packet';
 import { useState } from 'react';
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
 				return;
 			}
 			const bufferPacket = isBase64 ? Buffer.from(packet, 'base64') : Buffer.from(packet, 'hex');
-			const Packet = lora_packet.fromWire(bufferPacket);
+			const Packet = lorapacket.fromWire(bufferPacket);
 			const packetMIC = Packet.MIC.toString("hex");
 			const FRMPayload = Packet.FRMPayload.toString("hex");
 			const decodedPacket = JSON.stringify(Packet, null, 2);
@@ -27,14 +27,14 @@ export default function Home() {
 			if (appKey && nwkKey) {
 				const NwkSKey = Buffer.from(nwkKey, 'hex');
 				const AppSKey = Buffer.from(appKey, 'hex');
-				const isMicValid = lora_packet.verifyMIC(Packet, NwkSKey);
-				const decryptedPayload = lora_packet.decrypt(Packet, AppSKey, NwkSKey);
+				const isMicValid = lorapacket.verifyMIC(Packet, NwkSKey);
+				const decryptedPayload = lorapacket.decrypt(Packet, AppSKey, NwkSKey);
 				const decryptedPayloadHex = decryptedPayload.toString("hex");
 				const decryptedPayloadAscii = decryptedPayload.toString("ascii");
-				setDecoded(`${elements}\nIs MIC valid?: ${isMicValid}\nDecrypted (HEX): 0x${decryptedPayloadHex}\nDecrypted (ASCII): ${decryptedPayloadAscii}\n\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${elements}\nIs MIC valid?: ${isMicValid}\nDecrypted (HEX): 0x${decryptedPayloadHex}\nDecrypted (ASCII): ${decryptedPayloadAscii}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
 			} else {
 				// Solo decodifica la estructura básica del paquete
-				setDecoded(`${elements}\n\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${elements}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
 			}
 		} catch (error) {
 			alert('Error decoding packet: ' + error.message);
@@ -125,7 +125,7 @@ export default function Home() {
 									type="text"
 									name="app-key"
 									id="app-key"
-									placeholder="Paste your App Key here"
+									placeholder="Paste your AppSKey here"
 									value={appKey}
 									onChange={handleAppKeyChange}
 								/>
@@ -142,7 +142,7 @@ export default function Home() {
 									type="text"
 									name="nwk-key"
 									id="nwk-key"
-									placeholder="Paste your Nwk Key here"
+									placeholder="Paste your NwkSKey here"
 									value={nwkKey}
 									onChange={handleNwkKeyChange}
 								/>
