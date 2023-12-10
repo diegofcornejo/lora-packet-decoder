@@ -1,5 +1,5 @@
-![Vercel Deploy](https://therealsujitk-vercel-badge.vercel.app/?app=lora-packet)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/bbed2320-3bec-42e1-a591-9036e1ea2192/deploy-status)](https://app.netlify.com/sites/lora-packer/deploys)
+[![Vercel Deploy](https://therealsujitk-vercel-badge.vercel.app/?app=lora-packet)](https://lora-packet.vercel.app)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/bbed2320-3bec-42e1-a591-9036e1ea2192/deploy-status)](https://lora-packet.netlify.app)
 
 # Lora Packet Decoder
 This simple web app is used to decode Lora packets. It is based on the [Anthony Kirby's Lora Packet Decoder](https://github.com/anthonykirby/lora-packet)
