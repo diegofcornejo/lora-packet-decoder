@@ -9,6 +9,14 @@ export default function Home() {
 	const [appKey, setAppKey] = useState('');
 	const [nwkKey, setNwkKey] = useState('');
 	const [decoded, setDecoded] = useState('');
+	const [decodedBuffer, setDecodedBuffer] = useState('');
+
+	function replacer(key, value) {
+		if (Array.isArray(value)) {
+			return JSON.stringify(value);
+		}
+		return value;
+	}
 
 	const handleDecode = () => {
 		try {
@@ -20,8 +28,8 @@ export default function Home() {
 			const Packet = lorapacket.fromWire(Buffer.from(packet, encoded));
 			const packetMIC = Packet.MIC.toString("hex");
 			const FRMPayload = Packet.FRMPayload ? Packet.FRMPayload.toString("hex") : 'No FRMPayload found';
-			const decodedPacket = JSON.stringify(Packet, null, 2);
-			const header = `Assuming ${encoded}-encoded packet\n${packet}\n\nMIC: ${packetMIC}\nFRMPayload: ${FRMPayload}`;
+			const decodedPacket = JSON.stringify(Packet, replacer, 4);
+			const header = `Encoded packet (${encoded}) = ${packet}\n\nMIC = ${packetMIC}\nFRMPayload = ${FRMPayload}`;
 
 			if (appKey && nwkKey) {
 				const NwkSKey = Buffer.from(nwkKey, 'hex');
@@ -30,10 +38,11 @@ export default function Home() {
 				const decryptedPayload = lorapacket.decrypt(Packet, AppSKey, NwkSKey);
 				const decryptedPayloadHex = decryptedPayload.toString("hex");
 				const decryptedPayloadAscii = decryptedPayload.toString("ascii");
-				setDecoded(`${header}\n\nIs MIC valid?: ${isMicValid}\nDecrypted (HEX): 0x${decryptedPayloadHex}\nDecrypted (ASCII): ${decryptedPayloadAscii}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${header}\n\nIs MIC valid? = ${isMicValid}\nDecrypted (HEX) = 0x${decryptedPayloadHex}\nDecrypted (ASCII) = ${decryptedPayloadAscii}\n\n${Packet.toString()}`);
 			} else {
-				setDecoded(`${header}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${header}\n\n${Packet.toString()}`);
 			}
+			setDecodedBuffer(decodedPacket);
 		} catch (error) {
 			alert('Error decoding packet: ' + error.message);
 		}
@@ -44,6 +53,7 @@ export default function Home() {
 		setAppKey('');
 		setNwkKey('');
 		setDecoded('');
+		setDecodedBuffer('');
 	};
 
 	const handlePacketChange = (e) => {
@@ -59,7 +69,7 @@ export default function Home() {
 	};
 
 	return (
-		<main className="flex min-h-screen flex-col items-center justify-between p-24">
+		<main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-24">
 			<div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
 				<Image
 					className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70]"
@@ -71,7 +81,7 @@ export default function Home() {
 				/>
 			</div>
 			<div className="flex flex-col items-center justify-center p-5">
-				<h1 className="text-4xl font-bold text-center text-gray-900 dark:text-gray-100">
+				<h1 className="text-xl md:text-3xl font-bold text-center text-gray-900 dark:text-gray-100">
 					Lora Packet Decoder
 				</h1>
 				<p className="text-lg text-center text-gray-700 dark:text-gray-300">
@@ -96,7 +106,7 @@ export default function Home() {
 								Lora Packet (hex-encoded or Base64)
 							</label>
 							<textarea
-								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm md:text-base"
 								name="lora-packet"
 								id="lora-packet"
 								cols="30"
@@ -106,7 +116,7 @@ export default function Home() {
 								onChange={handlePacketChange}
 							></textarea>
 						</div>
-						<div className="flex flex-row items-center justify-center w-full gap-4 pt-6">
+						<div className="flex flex-col md:flex-row items-center justify-center w-full gap-4 pt-6">
 							<div className="flex flex-col items-center justify-center w-full space-y-4">
 								<label
 									className="text-sm font-bold text-gray-700 dark:text-gray-300"
@@ -115,11 +125,11 @@ export default function Home() {
 									AppSKey (hex-encoded; optional)
 								</label>
 								<input
-									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm md:text-base"
 									type="text"
 									name="app-key"
 									id="app-key"
-									placeholder="Paste your AppSKey here"
+									placeholder="Paste your App Session Key here"
 									value={appKey}
 									onChange={handleAppKeyChange}
 								/>
@@ -132,11 +142,11 @@ export default function Home() {
 									NwkSKey (hex-encoded; optional)
 								</label>
 								<input
-									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
+									className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm md:text-base"
 									type="text"
 									name="nwk-key"
 									id="nwk-key"
-									placeholder="Paste your NwkSKey here"
+									placeholder="Paste your Network Session Key here"
 									value={nwkKey}
 									onChange={handleNwkKeyChange}
 								/>
@@ -164,15 +174,26 @@ export default function Home() {
 						>
 							Decoded Packet
 						</label>
-						<textarea
-							className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm"
-							name="lora-packet"
-							id="lora-packet"
-							cols="30"
-							rows="30"
-							placeholder="Decoded packet will appear here"
-							value={decoded}
-						></textarea>
+						<div className="flex flex-col md:flex-row items-center justify-center w-full gap-4">
+							<textarea
+								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm"
+								name="lora-packet"
+								id="lora-packet"
+								cols="30"
+								rows="30"
+								placeholder="Decoded packet will appear here"
+								value={decoded}
+							></textarea>
+							<textarea
+								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm"
+								name="lora-packet"
+								id="lora-packet"
+								cols="30"
+								rows="30"
+								placeholder="Decoded packet (Buffer) will appear here"
+								value={decodedBuffer}
+							></textarea>
+						</div>
 					</div>
 				</div>
 			</div>
