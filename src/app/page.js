@@ -5,7 +5,6 @@ import * as lorapacket from 'lora-packet';
 import { useState } from 'react';
 
 export default function Home() {
-	const [isBase64, setIsBase64] = useState(false);
 	const [packet, setPacket] = useState('');
 	const [appKey, setAppKey] = useState('');
 	const [nwkKey, setNwkKey] = useState('');
@@ -17,12 +16,12 @@ export default function Home() {
 				alert('Please provide the Lora packet');
 				return;
 			}
-			const bufferPacket = isBase64 ? Buffer.from(packet, 'base64') : Buffer.from(packet, 'hex');
-			const Packet = lorapacket.fromWire(bufferPacket);
+			const encoded = packet.match(/^[0-9A-F]*$/i) ? 'hex' : 'base64';
+			const Packet = lorapacket.fromWire(Buffer.from(packet, encoded));
 			const packetMIC = Packet.MIC.toString("hex");
-			const FRMPayload = Packet.FRMPayload.toString("hex");
+			const FRMPayload = Packet.FRMPayload ? Packet.FRMPayload.toString("hex") : 'No FRMPayload found';
 			const decodedPacket = JSON.stringify(Packet, null, 2);
-			const elements = `MIC: ${packetMIC}\nFRMPayload: ${FRMPayload}`;
+			const header = `Assuming ${encoded}-encoded packet\n${packet}\n\nMIC: ${packetMIC}\nFRMPayload: ${FRMPayload}`;
 
 			if (appKey && nwkKey) {
 				const NwkSKey = Buffer.from(nwkKey, 'hex');
@@ -31,10 +30,9 @@ export default function Home() {
 				const decryptedPayload = lorapacket.decrypt(Packet, AppSKey, NwkSKey);
 				const decryptedPayloadHex = decryptedPayload.toString("hex");
 				const decryptedPayloadAscii = decryptedPayload.toString("ascii");
-				setDecoded(`${elements}\nIs MIC valid?: ${isMicValid}\nDecrypted (HEX): 0x${decryptedPayloadHex}\nDecrypted (ASCII): ${decryptedPayloadAscii}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${header}\n\nIs MIC valid?: ${isMicValid}\nDecrypted (HEX): 0x${decryptedPayloadHex}\nDecrypted (ASCII): ${decryptedPayloadAscii}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
 			} else {
-				// Solo decodifica la estructura básica del paquete
-				setDecoded(`${elements}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
+				setDecoded(`${header}\n\n${Packet.toString()}\nDecoded Payload:${decodedPacket}`);
 			}
 		} catch (error) {
 			alert('Error decoding packet: ' + error.message);
@@ -97,10 +95,6 @@ export default function Home() {
 							>
 								Lora Packet (hex-encoded or Base64)
 							</label>
-							<div className="flex items-center mb-4">
-								<input id="default-checkbox" type="checkbox" checked={isBase64} onChange={() => setIsBase64(!isBase64)} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-								<label htmlFor="default-checkbox" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is Base64</label>
-							</div>
 							<textarea
 								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300"
 								name="lora-packet"
