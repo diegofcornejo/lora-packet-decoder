@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import * as lorapacket from 'lora-packet';
 import { useState } from 'react';
+import { Toaster, toast } from 'sonner'
 
 export default function Home() {
 	const [packet, setPacket] = useState('');
@@ -10,6 +11,8 @@ export default function Home() {
 	const [nwkKey, setNwkKey] = useState('');
 	const [decoded, setDecoded] = useState('');
 	const [decodedBuffer, setDecodedBuffer] = useState('');
+	const [isWarning, setIsWarning] = useState(false);
+
 
 	function replacer(key, value) {
 		if (Array.isArray(value)) {
@@ -19,9 +22,11 @@ export default function Home() {
 	}
 
 	const handleDecode = () => {
+		setIsWarning(false);
 		try {
-			if (!packet) {
-				alert('Please provide the Lora packet');
+			if (!packet.trim()) {
+				toast.warning('Please provide the Lora packet');
+				setIsWarning(true);
 				return;
 			}
 			const encoded = packet.match(/^[0-9A-F]*$/i) ? 'hex' : 'base64';
@@ -30,6 +35,8 @@ export default function Home() {
 			const FRMPayload = Packet.FRMPayload ? Packet.FRMPayload.toString("hex") : 'No FRMPayload found';
 			const decodedPacket = JSON.stringify(Packet, replacer, 4);
 			const header = `Encoded packet (${encoded}) = ${packet}\n\nMIC = ${packetMIC}\nFRMPayload = ${FRMPayload}`;
+
+			setDecodedBuffer(decodedPacket);
 
 			if (appKey && nwkKey) {
 				const NwkSKey = Buffer.from(nwkKey, 'hex');
@@ -42,9 +49,8 @@ export default function Home() {
 			} else {
 				setDecoded(`${header}\n\n${Packet.toString()}`);
 			}
-			setDecodedBuffer(decodedPacket);
 		} catch (error) {
-			alert('Error decoding packet: ' + error.message);
+			toast.error(`Error decoding packet: ${error.message}`, { duration: 5000 });
 		}
 	};
 
@@ -54,6 +60,7 @@ export default function Home() {
 		setNwkKey('');
 		setDecoded('');
 		setDecodedBuffer('');
+		setIsWarning(false);
 	};
 
 	const handlePacketChange = (e) => {
@@ -106,7 +113,7 @@ export default function Home() {
 								Lora Packet (hex-encoded or Base64)
 							</label>
 							<textarea
-								className="w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm md:text-base"
+								className={`w-full p-4 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 text-sm md:text-base ${isWarning ? "border-yellow-500 border-2" : ""} `}
 								name="lora-packet"
 								id="lora-packet"
 								cols="30"
@@ -197,6 +204,7 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
+			<Toaster position="top-center" richColors closeButton/>
 		</main>
 	)
 }
